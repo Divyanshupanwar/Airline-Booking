@@ -1,0 +1,16 @@
+{
+  "name": "flightsandsearch",
+  "version": "1.0.0",
+  "description": "Microservice for Flight and Search.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^2.3.0",
+    "express": "^5.3.0",
+    "nodemon": "^3.1.14"
+  }
+}
