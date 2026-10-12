@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Airplane {
+  id        Int      @id @default(autoincrement())
+  modelNo   String   @map("model_no") @db.VarChar(100)
+  capacity  Int
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  flights Flight[]
+
+  @@map("airplanes")
+}
+
+model City {
+  id       Int       @id @default(autoincrement())
+  cityName String    @map("city_name") @db.VarChar(150)
+  airports Airport[]
+
+  @@map("cities")
+}
+
+model Airport {
+  id          Int    @id @default(autoincrement())
+  airportName String @map("airport_name") @db.VarChar(150)
+  airportCode String @unique @map("airport_code") @db.VarChar(10)
+  cityId      Int    @map("city_id")
+  address     String @db.Text
+
+  city City @relation(fields: [cityId], references: [id], onDelete: Restrict)
+
+  departingFlights Flight[] @relation("SourceAirport")
+  arrivingFlights  Flight[] @relation("DestinationAirport")
+
+  @@index([cityId])
+  @@map("airports")
+}
+
+model Flight {
+  id                   Int      @id @default(autoincrement())
+  sourceAirportId      Int      @map("source_airport_id")
+  destinationAirportId Int      @map("destination_airport_id")
+  departure            DateTime @db.Timestamptz(6)
+  arrival              DateTime @db.Timestamptz(6)
+  airplaneId           Int      @map("airplane_id")
+  flightNumber         String   @map("flight_number") @db.VarChar(20)
+  cost                 Decimal  @db.Decimal(10, 2)
+
+  sourceAirport      Airport  @relation("SourceAirport", fields: [sourceAirportId], references: [id], onDelete: Restrict)
+  destinationAirport Airport  @relation("DestinationAirport", fields: [destinationAirportId], references: [id], onDelete: Restrict)
+  airplane           Airplane @relation(fields: [airplaneId], references: [id], onDelete: Restrict)
+
+  @@index([sourceAirportId, departure])
+  @@index([destinationAirportId, departure])
+  @@index([airplaneId])
+  @@map("flights")
+}
